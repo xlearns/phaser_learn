@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Touch</title>
+    <meta charset="utf-8" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/phaser/2.6.2/phaser.js"></script>
+  </head>
+  <body>
+    <center><div id="gamebox"></div></center>
+    <script type="text/javascript">
+      window.onload = function () {
+        var game = new Phaser.Game(640, 360, Phaser.CANVAS, "gamebox");
+        game.state.add("main", GameState, true);
+      };
+
+      var GameState = function (game) {
+        var gamePad, btn, player;
+        this.preload = function () {
+          this.load.spritesheet("touch", "./assets/touch.png", 64, 64);
+        };
+        this.create = function () {
+          player = this.game.add.sprite(300, 180, "touch", 2);
+          gamePad = this.game.add.sprite(100, 260, "touch", 0);
+          gamePad.anchor.set(0.5);
+          btn = gamePad.addChild(this.game.make.sprite(0, 0, "touch", 1));
+          btn.anchor.set(0.5);
+          btn.inputEnabled = true;
+          btn.input.enableDrag();
+          btn.events.onDragUpdate.add(_dragUpdate, this);
+          btn.events.onDragStop.add(_dragStop, this);
+        };
+        this.update = function () {
+          player.x += btn.x / 10;
+          player.y += btn.y / 10;
+        };
+        var _dragUpdate = function (btn, p, xx, yy) {
+          var d = Math.sqrt(xx * xx + yy * yy);
+          if (d > 30) {
+            d = 30;
+          }
+          var r = Math.atan2(yy, xx);
+          btn.x = Math.cos(r) * d;
+          btn.y = Math.sin(r) * d;
+        };
+        var _dragStop = function (btn) {
+          btn.x = 0;
+          btn.y = 0;
+        };
+      };
+    </script>
+  </body>
+</html>
